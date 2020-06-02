@@ -1,0 +1,37 @@
+@using UserAdmin.Models;
+@model User;
+
+<div class="col-5">
+
+    <h2>Register</h2><br>
+
+    <form asp-action="Register" method="post">
+        <div class="form-group">
+            <span asp-validation-for="FirstName" class="text-danger"></span><br>
+            <label asp-for="FirstName">First Name</label>
+            <input asp-for="FirstName" class="form-control">
+        </div>
+        <div class="form-group">
+            <span asp-validation-for="LastName" class="text-danger"></span><br>
+            <label asp-for="LastName">Last Name</label>
+            <input asp-for="LastName" class="form-control">
+        </div>
+        <div class="form-group">
+            <span asp-validation-for="Email" class="text-danger"></span><br>
+            <label asp-for="Email">Email Address</label>
+            <input asp-for="Email" class="form-control">
+        </div>
+        <div class="form-group">
+            <span asp-validation-for="Password" class="text-danger"></span><br>
+            <label asp-for="Password">Password (minimum 8 characters)</label>
+            <input asp-for="Password" class="form-control">
+        </div>
+        <div class="form-group">
+            <span asp-validation-for="ConfirmPW" class="text-danger"></span><br>
+            <label asp-for="ConfirmPW">Confirm Password</label>
+            <input asp-for="ConfirmPW" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+
+</div>

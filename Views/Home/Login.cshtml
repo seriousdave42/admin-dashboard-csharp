@@ -1,0 +1,22 @@
+@using UserAdmin.Models;
+@model UserLogin;
+
+<div class="col-5">
+
+    <h2>Login</h2><br>
+
+    <form asp-action="Login" method="post">
+        <div class="form-group">
+            <span asp-validation-for="Email" class="text-danger"></span><br>
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" class="form-control">
+        </div>
+        <div class="form-group">
+            <span asp-validation-for="Password" class="text-danger"></span><br>
+            <label asp-for="Password">Password</label>
+            <input asp-for="Password" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+
+</div>
