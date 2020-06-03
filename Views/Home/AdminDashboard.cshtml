@@ -1,0 +1,42 @@
+@using System.Collections.Generic;
+@using UserAdmin.Models;
+@model List<User>;
+
+<div class="row justify-content-between">
+    <h3 class="col-6">Manage Users</h1>
+    <h3 class="col-3">Welcome, @ViewBag.UserName</h3>
+</div>
+
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Created At</th>
+        <th scope="col">Admin Level</th>
+        <th scope="col">Actions</th>
+    </thead>
+    <tbody>
+    @foreach (User u in Model)
+    {
+        <tr>
+            <td>@u.UserId</td>
+            <td><a asp-action="UserPage" asp-route-userId="@u.UserId">@u.FirstName @u.LastName</a></td>
+            <td>@u.Email</td>
+            <td>@u.CreatedAt.ToString("MMMM dd, yyyy")</td>
+            @if (u.AdminLevel == 9)
+            {
+                <td>Admin</td>
+            }
+            else
+            {
+                <td>User</td>
+            }
+            <td>
+                <a asp-action="AdminEditUser" asp-route-userId="@u.UserId">Edit</a>    
+                <a asp-action="DeleteUser" asp-route-userId="@u.UserId">Remove</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
