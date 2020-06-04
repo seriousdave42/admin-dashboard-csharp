@@ -176,6 +176,7 @@ namespace UserAdmin.Controllers
                 return RedirectToAction("Index");
             }
             User user = _context.Users.SingleOrDefault(u => u.UserId == (int)userId);
+            ViewBag.Logged = true;
             return View(user);
         }
 
