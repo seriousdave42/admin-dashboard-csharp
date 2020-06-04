@@ -167,6 +167,26 @@ namespace UserAdmin.Controllers
             }
         }
 
+        [HttpGet("profile")]
+        public IActionResult UserProfile()
+        {
+            int? userId = HttpContext.Session.GetInt32("LoggedId");
+            if (userId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            User user = _context.Users.SingleOrDefault(u => u.UserId == (int)userId);
+            return View(user);
+        }
+
+        [HttpPost("profile/editinfo")]
+        public IActionResult EditInfo(User editUser)
+        {
+            int? userId = HttpContext.Session.GetInt32("LoggedId");
+            User updateUser = _context.Users.SingleOrDefault(u => u.UserId == (int)userId);
+            return RedirectToAction("Dashboard");
+        }
+
         [HttpGet("logout")]
         public IActionResult Logout()
         {
