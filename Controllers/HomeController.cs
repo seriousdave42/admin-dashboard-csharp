@@ -181,7 +181,7 @@ namespace UserAdmin.Controllers
         }
 
         [HttpPost("profile/editinfo")]
-        public IActionResult EditInfo(User editForm)
+        public IActionResult EditInfo(UserInfo editForm)
         {
             if (ModelState.IsValid)
             {
@@ -190,14 +190,35 @@ namespace UserAdmin.Controllers
                 updateUser.FirstName = editForm.FirstName;
                 updateUser.LastName = editForm.LastName;
                 updateUser.Email = editForm.Email;
-                // updateUser.UpdatedAt = DateTime.Now;
+                updateUser.UpdatedAt = DateTime.Now;
                 _context.SaveChanges();
+                HttpContext.Session.SetString("LoggedName", editForm.FirstName);
                 return RedirectToAction("Dashboard");
             }
             else
             {
                 ViewBag.Logged=true;
                 return View("UserProfile", editForm);
+            }
+        }
+
+        [HttpPost("profile/editPassword")]
+        public IActionResult EditPassword(UserPassword editForm)
+        {
+            int? userId = HttpContext.Session.GetInt32("LoggedId");
+            User updateUser = _context.Users.FirstOrDefault(u => u.UserId == (int)userId);
+            if(ModelState.IsValid)
+            {
+                PasswordHasher<UserPassword> hasher = new PasswordHasher<UserPassword>();
+                updateUser.Password = hasher.HashPassword(editForm, editForm.Password);
+                updateUser.UpdatedAt = DateTime.Now;
+                _context.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            else
+            {
+                ViewBag.Logged = true;
+                return View("UserProfile", updateUser);
             }
         }
 
