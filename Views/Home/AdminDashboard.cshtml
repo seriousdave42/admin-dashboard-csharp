@@ -2,9 +2,10 @@
 @using UserAdmin.Models;
 @model List<User>;
 
-<div class="row justify-content-between">
-    <h3 class="col-6">Manage Users</h1>
-    <h3 class="col-3">Welcome, @ViewBag.UserName</h3>
+<div class="row justify-content-between mb-2">
+    <h3 class="col-4">Manage Users</h1>
+    <h3 class="col-4">Welcome, @ViewBag.UserName</h3>
+    <a asp-action="AddUser" class="btn btn-primary align-right">Add a User</a>
 </div>
 
 <table class="table table-striped">

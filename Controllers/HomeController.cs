@@ -181,12 +181,64 @@ namespace UserAdmin.Controllers
         }
 
         [HttpPost("profile/editinfo")]
-        public IActionResult EditInfo(User editUser)
+        public IActionResult EditInfo(User editForm)
         {
-            int? userId = HttpContext.Session.GetInt32("LoggedId");
-            User updateUser = _context.Users.SingleOrDefault(u => u.UserId == (int)userId);
-            return RedirectToAction("Dashboard");
+            if (ModelState.IsValid)
+            {
+                int? userId = HttpContext.Session.GetInt32("LoggedId");
+                User updateUser = _context.Users.FirstOrDefault(u => u.UserId == (int)userId);
+                updateUser.FirstName = editForm.FirstName;
+                updateUser.LastName = editForm.LastName;
+                updateUser.Email = editForm.Email;
+                // updateUser.UpdatedAt = DateTime.Now;
+                _context.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            else
+            {
+                ViewBag.Logged=true;
+                return View("UserProfile", editForm);
+            }
         }
+
+        [HttpGet("users/new")]
+        public IActionResult AddUser() {
+            int? userId = HttpContext.Session.GetInt32("LoggedId");
+            if (userId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            ViewBag.Logged = true;
+            return View();
+        }
+
+        [HttpPost("users/new")]
+        public IActionResult NewUser(User newUser)
+        {
+            if(ModelState.IsValid)
+            {
+                if(_context.Users.Any(u => u.Email == newUser.Email))
+                {
+                    ModelState.AddModelError("Email", "Email already registered!");
+                    ViewBag.Logged = true;
+                    return View("AddUser");
+                }
+                else
+                {
+                    PasswordHasher<User> hasher = new PasswordHasher<User>();
+                    newUser.Password = hasher.HashPassword(newUser, newUser.Password);
+                    _context.Users.Add(newUser);
+                    _context.SaveChanges();
+                    return RedirectToAction("AdminDashboard");
+                }
+            }
+            else
+            {
+                ViewBag.Logged = true;
+                return View ("AddUser");
+            }
+        }
+
 
         [HttpGet("logout")]
         public IActionResult Logout()
