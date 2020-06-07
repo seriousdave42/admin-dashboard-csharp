@@ -4,20 +4,13 @@
 @{
     UserInfo currentUser = new UserInfo() {FirstName = Model.FirstName, LastName = Model.LastName, Email = Model.Email, AdminLevel = Model.AdminLevel};
     UserPassword userPassword = new UserPassword();
-    UserDesc userDesc = new UserDesc() {Description = Model.Description};
 }
 
-<h2>Edit profile</h2><br>
+<h2>Edit @Model.FirstName @Model.LastName</h2><br>
 
 <div class="row justify-content-between">
 
     <partial name="_UserInfo" model="currentUser" view-data="ViewData"></partial>
     <partial name="_UserPassword" model="userPassword"></partial>
 
-</div>
-
-<div class="row">
-
-    <partial name="_UserDesc" model="userDesc"></partial>
-    
 </div>

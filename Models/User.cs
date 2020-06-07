@@ -27,6 +27,7 @@ namespace UserAdmin.Models
         [Compare("Password")]
         [DataType(DataType.Password)]
         public string ConfirmPW {get; set;}
+        [MaxLength(50)]
         public string Description {get; set;}
         [Required]
         public int AdminLevel {get; set;} = 1;

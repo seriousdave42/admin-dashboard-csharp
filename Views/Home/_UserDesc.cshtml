@@ -1,0 +1,13 @@
+@using UserAdmin.Models;
+@model UserDesc;
+
+<div class="col-10 mx-auto">
+    <form asp-action="EditDesc" method="post">
+        <div class="form-group">
+            <span asp-validation-for="Description" class="text-danger"></span><br>
+            <label asp-for="Description">Description</label>
+            <input asp-for="Description" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Description</button>
+    </form>
+</div>

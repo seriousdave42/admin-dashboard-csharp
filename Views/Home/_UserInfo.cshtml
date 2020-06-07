@@ -2,7 +2,7 @@
 @model UserInfo;
 
 <div class="col-5">
-    <form asp-action="EditInfo" method="post">
+    <form asp-action="EditInfo" asp-route-userId="@ViewBag.UserId" method="post">
         <div class="form-group">
             <span asp-validation-for="FirstName" class="text-danger"></span><br>
             <label asp-for="FirstName">First Name</label>
@@ -18,6 +18,18 @@
             <label asp-for="Email">Email Address</label>
             <input asp-for="Email" class="form-control">
         </div>
+        @if (ViewBag.Admin)
+        {
+            <label asp-for="AdminLevel">Security Level</label>
+            <select asp-for="AdminLevel" class="form-control">
+                <option value=1>User</option>
+                <option value=9>Admin</option>
+            </select>
+        }
+        else
+        {
+            <input type="hidden" name="AdminLevel" value="@Model.AdminLevel">
+        }
         <button type="submit" class="btn btn-primary">Update Info</button>
     </form>
 </div>

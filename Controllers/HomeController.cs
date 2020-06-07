@@ -167,50 +167,112 @@ namespace UserAdmin.Controllers
             }
         }
 
-        [HttpGet("profile")]
+        [HttpGet("users/edit")]
         public IActionResult UserProfile()
         {
-            int? userId = HttpContext.Session.GetInt32("LoggedId");
-            if (userId == null)
+            int? loggedId = HttpContext.Session.GetInt32("LoggedId");
+            if (loggedId == null)
             {
                 return RedirectToAction("Index");
             }
-            User user = _context.Users.SingleOrDefault(u => u.UserId == (int)userId);
+            User user = _context.Users.SingleOrDefault(u => u.UserId == loggedId);
             ViewBag.Logged = true;
+            ViewBag.Admin = false;
+            ViewBag.UserId = loggedId;
             return View(user);
         }
 
-        [HttpPost("profile/editinfo")]
-        public IActionResult EditInfo(UserInfo editForm)
+        [HttpGet("users/edit/{userId}")]
+        public IActionResult EditUser(int userId)
         {
+            int? loggedId = HttpContext.Session.GetInt32("LoggedId");
+            if (loggedId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            if (loggedId == userId)
+            {
+                RedirectToAction("UserProfile");
+            }
+            User user = _context.Users.SingleOrDefault(u => u.UserId == userId);
+            ViewBag.Logged = true;
+            ViewBag.Admin = true;
+            ViewBag.UserId = userId;
+            return View(user);
+        }
+
+        [HttpPost("profile/editinfo/{userId}")]
+        public IActionResult EditInfo(int userId, UserInfo editForm)
+        {
+            int? loggedId = HttpContext.Session.GetInt32("LoggedId");
+            User updateUser = _context.Users.FirstOrDefault(u => u.UserId == userId);
             if (ModelState.IsValid)
             {
-                int? userId = HttpContext.Session.GetInt32("LoggedId");
-                User updateUser = _context.Users.FirstOrDefault(u => u.UserId == (int)userId);
                 updateUser.FirstName = editForm.FirstName;
                 updateUser.LastName = editForm.LastName;
                 updateUser.Email = editForm.Email;
+                updateUser.AdminLevel = editForm.AdminLevel;
                 updateUser.UpdatedAt = DateTime.Now;
                 _context.SaveChanges();
-                HttpContext.Session.SetString("LoggedName", editForm.FirstName);
+                if ((int)loggedId == userId)
+                {
+                    HttpContext.Session.SetString("LoggedName", editForm.FirstName);
+                }
                 return RedirectToAction("Dashboard");
             }
             else
             {
                 ViewBag.Logged=true;
+                if ((int)loggedId == userId)
+                {
+                    ViewBag.Admin = false;
+                }
+                else
+                {
+                    ViewBag.Admin = true;
+                }
+                ViewBag.UserId = userId;
                 return View("UserProfile", editForm);
             }
         }
 
-        [HttpPost("profile/editPassword")]
-        public IActionResult EditPassword(UserPassword editForm)
+        [HttpPost("profile/editPassword/{userId}")]
+        public IActionResult EditPassword(int userId, UserPassword editForm)
+        {
+            int? loggedId = HttpContext.Session.GetInt32("LoggedId");
+            User updateUser = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if(ModelState.IsValid)
+            {
+                PasswordHasher<UserPassword> hasher = new PasswordHasher<UserPassword>();
+                updateUser.Password = hasher.HashPassword(editForm, editForm.Password);
+                updateUser.UpdatedAt = DateTime.Now;
+                _context.SaveChanges();
+                return RedirectToAction("Dashboard");
+            }
+            else
+            {
+                ViewBag.Logged = true;
+                if ((int)loggedId == userId)
+                {
+                    ViewBag.Admin = false;
+                }
+                else
+                {
+                    ViewBag.Admin = true;
+                }
+                ViewBag.UserId = userId;
+                return View("UserProfile", updateUser);
+            }
+        }
+
+        [HttpPost("profile/editDesc")]
+        public IActionResult EditDesc(UserDesc editForm)
         {
             int? userId = HttpContext.Session.GetInt32("LoggedId");
             User updateUser = _context.Users.FirstOrDefault(u => u.UserId == (int)userId);
             if(ModelState.IsValid)
             {
-                PasswordHasher<UserPassword> hasher = new PasswordHasher<UserPassword>();
-                updateUser.Password = hasher.HashPassword(editForm, editForm.Password);
+                updateUser.Description = editForm.Description;
                 updateUser.UpdatedAt = DateTime.Now;
                 _context.SaveChanges();
                 return RedirectToAction("Dashboard");
@@ -259,7 +321,6 @@ namespace UserAdmin.Controllers
                 return View ("AddUser");
             }
         }
-
 
         [HttpGet("logout")]
         public IActionResult Logout()
