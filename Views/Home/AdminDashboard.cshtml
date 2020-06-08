@@ -33,10 +33,17 @@
             {
                 <td>User</td>
             }
-            <td>
-                <a asp-action="EditUser" asp-route-userId="@u.UserId">Edit</a>    
-                <a asp-action="DeleteUser" asp-route-userId="@u.UserId">Remove</a>
-            </td>
+            @if (u.UserId != ViewBag.AdminId)
+            {
+                <td>
+                    <a asp-action="EditUser" asp-route-userId="@u.UserId">Edit</a>    
+                    <a asp-action="RemoveUser" asp-route-userId="@u.UserId">Remove</a>
+                </td>
+            }
+            else
+            {
+                <td></td>
+            }
         </tr>
     }
     </tbody>

@@ -163,8 +163,43 @@ namespace UserAdmin.Controllers
                 List<User> users = _context.Users.ToList();
                 ViewBag.UserName = userName;
                 ViewBag.Logged = true;
+                ViewBag.AdminId = (int)userId;
                 return View(users);
             }
+        }
+
+        [HttpGet("users/{userId}")]
+        public IActionResult UserPage(int userId)
+        {
+            int? loggedId = HttpContext.Session.GetInt32("LoggedId");
+            if (loggedId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            User user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            ViewBag.Messages = _context.Messages
+                                       .Include(m => m.Sender)
+                                       .Include(m => m.MessageComments)
+                                       .ThenInclude(c => c.Commenter)
+                                       .Where(m => m.Recipient.UserId == userId)
+                                       .OrderByDescending(m => m.CreatedAt)
+                                       .ToList();
+            ViewBag.User = user;
+            ViewBag.Logged = true;
+            return View();
+        }
+        
+        [HttpPost("users/{userId}")]
+        public IActionResult AddMessage(int userId, Message newMessage)
+        {
+            int? loggedId = HttpContext.Session.GetInt32("LoggedId");
+            User loggedUser = _context.Users.FirstOrDefault(u => u.UserId == loggedId);
+            User recipient = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            newMessage.Sender = loggedUser;
+            newMessage.Recipient = recipient;
+            _context.Messages.Add(newMessage);
+            _context.SaveChanges();
+            return RedirectToAction("UserPage", new {userId = userId});
         }
 
         [HttpGet("users/edit")]
@@ -175,7 +210,7 @@ namespace UserAdmin.Controllers
             {
                 return RedirectToAction("Index");
             }
-            User user = _context.Users.SingleOrDefault(u => u.UserId == loggedId);
+            User user = _context.Users.FirstOrDefault(u => u.UserId == loggedId);
             ViewBag.Logged = true;
             ViewBag.Admin = false;
             ViewBag.UserId = loggedId;
@@ -194,7 +229,7 @@ namespace UserAdmin.Controllers
             {
                 RedirectToAction("UserProfile");
             }
-            User user = _context.Users.SingleOrDefault(u => u.UserId == userId);
+            User user = _context.Users.FirstOrDefault(u => u.UserId == userId);
             ViewBag.Logged = true;
             ViewBag.Admin = true;
             ViewBag.UserId = userId;
@@ -320,6 +355,24 @@ namespace UserAdmin.Controllers
                 ViewBag.Logged = true;
                 return View ("AddUser");
             }
+        }
+
+        [HttpGet("remove/{userId}")]
+        public IActionResult RemoveUser(int userId)
+        {
+            int? loggedId = HttpContext.Session.GetInt32("LoggedId");
+            if (loggedId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            if ((int)loggedId == userId)
+            {
+                return RedirectToAction("Dashboard");
+            }
+            User removeUser = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            _context.Users.Remove(removeUser);
+            _context.SaveChanges();
+            return RedirectToAction("Dashboard");
         }
 
         [HttpGet("logout")]

@@ -1,0 +1,43 @@
+@using System.Collections.Generic;
+@using UserAdmin.Models;
+@model Message;
+
+<h3>@ViewBag.User.FirstName @ViewBag.User.LastName</h3>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td>Registered at:</td>
+            <td>@ViewBag.User.CreatedAt</td>
+        </tr>
+        <tr>
+            <td>User ID:</td>
+            <td>@ViewBag.User.UserId</td>
+        </tr>
+        <tr>
+            <td>Email address:</td>
+            <td>@ViewBag.User.Email</td>
+        </tr>
+        <tr>
+            <td>Description:</td>
+            <td>@ViewBag.User.Description</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Leave a message for @ViewBag.User.FirstName</h3>
+
+<form asp-action="AddMessage" asp-route-userId="@ViewBag.User.UserId" method="post">
+    <div class="form-group">
+        <span asp-validation-for="MessageText" class="text-danger"></span><br>
+        <textarea asp-for="MessageText" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Post</button>
+</form>
+
+<ul>
+    @foreach (Message m in ViewBag.Messages)
+    {
+        <li>@m.MessageText</li>
+    }
+</ul>
