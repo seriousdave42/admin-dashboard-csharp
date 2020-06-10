@@ -8,7 +8,6 @@ namespace UserAdmin.Models
         [Key]
         public int CommentID {get; set;}
         [Required]
-        [MinLength(5)]
         public string CommentText {get; set;}
         public User Commenter {get; set;}
         public Message MessageCommented {get; set;}

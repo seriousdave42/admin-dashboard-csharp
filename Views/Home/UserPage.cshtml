@@ -27,7 +27,7 @@
 
 <h3>Leave a message for @ViewBag.User.FirstName</h3>
 
-<form asp-action="AddMessage" asp-route-userId="@ViewBag.User.UserId" method="post">
+<form class="mb-3" asp-action="AddMessage" asp-route-userId="@ViewBag.User.UserId" method="post">
     <div class="form-group">
         <span asp-validation-for="MessageText" class="text-danger"></span><br>
         <textarea asp-for="MessageText" class="form-control"></textarea>
@@ -35,9 +35,29 @@
     <button type="submit" class="btn btn-success">Post</button>
 </form>
 
-<ul>
-    @foreach (Message m in ViewBag.Messages)
+@foreach (Message m in ViewBag.Messages)
+{
+    <div class="card mb-2">
+        <div class="card-header">@m.Sender.FirstName @m.Sender.LastName wrote...</div>
+        <div class="card-body">@m.MessageText</div>
+    </div><br>
+    @foreach (Comment c in m.MessageComments)
     {
-        <li>@m.MessageText</li>
+        <div class="row justify-content-end mb-2">
+            <div class="col-10">
+                <div class="card">
+                    <div class="card-header">@c.Commenter.FirstName @c.Commenter.LastName commented...</div>
+                    <div class="card-body">@c.CommentText</div>
+                </div>
+            </div>
+        </div>
     }
-</ul>
+    <div class="row justify-content-end mb-3">
+        <form class="col-10" asp-action="AddComment" asp-route-userId="@ViewBag.User.UserId" asp-route-messageId="@m.MessageID" method="post">
+            <div class="form-group">
+                <textarea name="CommentText" class="form-control" placeholder="Leave a comment..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Comment</button>
+        </form>
+    </div>
+}

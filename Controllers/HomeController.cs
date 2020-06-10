@@ -184,6 +184,10 @@ namespace UserAdmin.Controllers
                                        .Where(m => m.Recipient.UserId == userId)
                                        .OrderByDescending(m => m.CreatedAt)
                                        .ToList();
+            foreach (Message m in ViewBag.Messages)
+            {
+                m.MessageComments.Sort((x,y) => x.CreatedAt.CompareTo(y.CreatedAt)); 
+            }
             ViewBag.User = user;
             ViewBag.Logged = true;
             return View();
@@ -198,6 +202,19 @@ namespace UserAdmin.Controllers
             newMessage.Sender = loggedUser;
             newMessage.Recipient = recipient;
             _context.Messages.Add(newMessage);
+            _context.SaveChanges();
+            return RedirectToAction("UserPage", new {userId = userId});
+        }
+
+        [HttpPost("users/{userId}/{messageId}")]
+        public IActionResult AddComment(int userId, int messageId, Comment newComment)
+        {
+            int? loggedId = HttpContext.Session.GetInt32("LoggedId");
+            User loggedUser = _context.Users.FirstOrDefault(u => u.UserId == loggedId);
+            Message message = _context.Messages.FirstOrDefault(m => m.MessageID == messageId);
+            newComment.Commenter = loggedUser;
+            newComment.MessageCommented = message;
+            _context.Comments.Add(newComment);
             _context.SaveChanges();
             return RedirectToAction("UserPage", new {userId = userId});
         }
